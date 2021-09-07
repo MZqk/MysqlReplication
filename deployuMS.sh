@@ -26,13 +26,13 @@ echo "Staring install Mysql5.7 soft"
 echo "============================================"
 bash ./installmysql.sh 2>&1 >/dev/null
 
-echo -e "log-bin\n server_id=1\n character-set-server=utf8mb4" >> /etc/my.cnf
+echo -e "log-bin\nserver_id=1\ncharacter-set-server=utf8mb4" >> /etc/my.cnf
 #cat mysql.param >> /etc/my.cnf
 
 echo "Configuring the Master"
 echo "============================================"
+# change init mysql password
 bash ./changepasswd.sh 2>&1 >/dev/null
-
 mysql -uroot -pmysql1qaz@WSX <<EOF
 use mysql;
 CREATE USER 'guandatadb_slave'@'%' IDENTIFIED BY 'mysql1qaz@WSX';
@@ -45,26 +45,20 @@ echo "Getting the Master's Binary Log Co-ordinates"
 echo "============================================"
 Mbinlog=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print $1}'`
 Mpos=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print $2}'`
-
 echo  ${Mbinlog} ${Mpos}
 
 
 echo "Staring install Mysql5.7 soft for Slave"
 echo "============================================"
 ssh ${SlaveName} "cd /root;mkdir mysqlslave" 2>&1 >/dev/null 
-scp *rpm root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-scp *sh root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-
+rsync -u *rpm root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
+rsync -u *sh root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
 ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh" 2>&1 >/dev/null 
-
-#ssh ${SlaveName} "echo  server_id=2 >> /etc/my.cnf"
-ssh ${SlaveName} "echo -e \"server_id=2\n log-bin\n character-set-server=utf8mb4\" >> /etc/my.cnf"
+ssh ${SlaveName} "echo -e \"server_id=2\nlog-bin\ncharacter-set-server=utf8mb4\" >> /etc/my.cnf"
 
 echo "Configuring the Slave"
 echo "============================================"
-
 ssh ${SlaveName} "cd /root/mysqlslave ;bash changepasswd.sh" 2>&1 >/dev/null
-
 ssh ${SlaveName} "mysql -uroot -pmysql1qaz@WSX <<EOF
 CHANGE MASTER TO
   MASTER_HOST='${MACHINEIP}',
@@ -80,6 +74,7 @@ EOF
 
 echo "Check that the replication is working"
 echo "============================================"
+sleep 3
 Slaveready=`ssh ${SlaveName} "mysql -uroot -pmysql1qaz@WSX <<< \"show slave status\G;\"|grep -E Slave.*Running:|grep Yes |wc -l"`
 if [ $Slaveready -eq 2 ]
 then
