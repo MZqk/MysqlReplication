@@ -71,6 +71,7 @@ EOF
 
 echo "Check that the replication is working"
 echo "============================================"
+sleep 3
 Slaveready=`mysql -uroot -pmysql1qaz@WSX <<< "show slave status\G;"|grep -E Slave.*Running:|grep Yes |wc -l`
 if [ $Slaveready -eq 2 ]
 then
