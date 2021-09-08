@@ -46,17 +46,14 @@ Mpos1=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{pr
 echo  ${Mbinlog1} ${Mpos1}
 echo "Getting the Master2's Binary Log Co-ordinates"
 echo "============================================"
-Mbinlog1=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $1}'"`
-Mpos1=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $2}'"`
+Mbinlog2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $1}'"`
+Mpos2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $2}'"`
 echo  ${Mbinlog2} ${Mpos2}
 
 echo "Configuring the Master1"
 echo "============================================"
 mysql -uroot -pmysql1qaz@WSX <<EOF
 use mysql;
-CREATE USER 'guandatadb_slave'@'%' IDENTIFIED BY 'mysql1qaz@WSX';
-GRANT REPLICATION SLAVE ON *.* TO 'guandatadb_slave'@'%' identified by 'mysql1qaz@WSX';
-flush privileges;
 CHANGE MASTER TO
   MASTER_HOST='${Master2IP}',
   MASTER_USER='guandatadb_slave',
@@ -72,9 +69,6 @@ echo "Configuring the Master2"
 echo "============================================"
 ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<EOF
 use mysql;
-CREATE USER 'guandatadb_slave'@'%' IDENTIFIED BY 'mysql1qaz@WSX';
-GRANT REPLICATION SLAVE ON *.* TO 'guandatadb_slave'@'%' identified by 'mysql1qaz@WSX';
-flush privileges;
 CHANGE MASTER TO
   MASTER_HOST='${Master1IP}',
   MASTER_USER='guandatadb_slave',
@@ -93,16 +87,16 @@ sleep 3
 Slaveready=`mysql -uroot -pmysql1qaz@WSX <<< "show slave status\G;"|grep -E Slave.*Running:|grep Yes |wc -l`
 if [ $Slaveready -eq 2 ]
 then
-    echo "Slave is ready"
+    echo "Master1 is ready"
 else
-    echo "Slave is falied"
+    echo "Master1 is falied"
 fi
 echo "============================================"
 sleep 3
 Slaveready=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"show slave status\G;\"|grep -E Slave.*Running:|grep Yes |wc -l"`
 if [ $Slaveready -eq 2 ]
 then
-    echo "Slave is ready"
+    echo "Master2 is ready"
 else
-    echo "Slave is falied"
+    echo "Master2 is falied"
 fi
