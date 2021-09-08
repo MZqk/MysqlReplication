@@ -41,13 +41,15 @@ ssh ${Master2Name} "cd /root/mysqlmaster2 ;bash changepasswd.sh" 2>&1 >/dev/null
 
 echo "Getting the Master1's Binary Log Co-ordinates"
 echo "============================================"
-Mbinlog1=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print $1}'`
-Mpos1=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print $2}'`
+Mbinlog1=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print \$1}'`
+Mpos1=`mysql -uroot -pmysql1qaz@WSX <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print \$2}'`
 echo  ${Mbinlog1} ${Mpos1}
 echo "Getting the Master2's Binary Log Co-ordinates"
 echo "============================================"
-Mbinlog2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $1}'"`
-Mpos2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print $2}'"`
+#Mbinlog2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print \$1}'"`
+#Mpos2=`ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<< \"SHOW MASTER STATUS;\"|tail -n 1|awk '{print \$2}'"`
+Mbinlog2=`mysql -uroot -pmysql1qaz@WSX -h ${Master2IP} <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print \$1}'`
+Mpos2=`mysql -uroot -pmysql1qaz@WSX -h ${Master2IP} <<< "SHOW MASTER STATUS;"|tail -n 1|awk '{print \$2}'`
 echo  ${Mbinlog2} ${Mpos2}
 
 echo "Configuring the Master1"
@@ -67,7 +69,7 @@ EOF
 
 echo "Configuring the Master2"
 echo "============================================"
-ssh ${Master2Name} "mysql -uroot -pmysql1qaz@WSX <<EOF
+mysql -uroot -pmysql1qaz@WSX -h ${Master2IP} <<EOF
 use mysql;
 CHANGE MASTER TO
   MASTER_HOST='${Master1IP}',
@@ -79,7 +81,7 @@ CHANGE MASTER TO
   MASTER_CONNECT_RETRY=10;
 START SLAVE;
 EOF
-"
+
 
 echo "Check that the replication is working"
 echo "============================================"
