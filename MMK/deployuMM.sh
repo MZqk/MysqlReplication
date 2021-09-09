@@ -24,8 +24,8 @@ fi
 echo "Staring install Mysql5.7 soft for Master1"
 echo "============================================"
 bash ./installmysql.sh 2>&1 >/dev/null
-echo -e "log-bin\nserver_id=1\ncharacter-set-server=utf8mb4" >> /etc/my.cnf
-#cat mysql.param >> /etc/my.cnf
+echo -e "[mysqld]\nserver_id=1\n" > /etc/my.cnf
+cat mysql.param >> /etc/my.cnf
 # change init mysql password
 bash ./changepasswd.sh 2>&1 >/dev/null
 
@@ -35,7 +35,7 @@ ssh ${Master2Name} "cd /root;mkdir mysqlmaster2" 2>&1 >/dev/null
 rsync -u *rpm root@${Master2Name}:/root/mysqlmaster2 2>&1 >/dev/null
 rsync -u *sh root@${Master2Name}:/root/mysqlmaster2 2>&1 >/dev/null
 ssh ${Master2Name} "cd /root/mysqlmaster2;/bin/bash installmysql.sh" 2>&1 >/dev/null 
-ssh ${Master2Name} "echo -e \"server_id=2\nlog-bin\ncharacter-set-server=utf8mb4\" >> /etc/my.cnf"
+ssh ${Master2Name} "echo -e \"[mysqld]\nserver_id=2\n\" > /etc/my.cnf"
 # change init mysql password
 ssh ${Master2Name} "cd /root/mysqlmaster2 ;bash changepasswd.sh" 2>&1 >/dev/null
 
