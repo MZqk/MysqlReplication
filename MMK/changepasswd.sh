@@ -11,6 +11,8 @@ mysql -uroot -p$Mysqlroot --connect-expired-password  <<< "set password for root
 mysql -uroot -pmysql1qaz@WSX  <<< "update mysql.user set host='%' where host='localhost' and user='root';"
 
 mysql -uroot -pmysql1qaz@WSX <<EOF
+install plugin rpl_semi_sync_master soname 'semisync_master.so';
+install plugin rpl_semi_sync_slave soname 'semisync_slave.so';
 use mysql;
 CREATE USER 'guandatadb_slave'@'%' IDENTIFIED BY 'mysql1qaz@WSX';
 GRANT REPLICATION SLAVE ON *.* TO 'guandatadb_slave'@'%' identified by 'mysql1qaz@WSX';
