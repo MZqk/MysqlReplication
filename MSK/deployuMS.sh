@@ -34,7 +34,7 @@ fi
 echo "Staring install Mysql5.7 soft"
 echo "============================================"
 bash ./installmysql.sh 2>&1 >/dev/null
-mv /var/lib/mysql /home/guandata/data
+bash changedatadir.sh
 cat mysql.param > /etc/my.cnf
 echo -e "server_id=1" >> /etc/my.cnf
 
@@ -62,7 +62,7 @@ echo "============================================"
 ssh ${SlaveName} "cd /root;mkdir mysqlslave" 2>&1 >/dev/null 
 rsync -u *rpm root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
 rsync -u * root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh;mv /var/lib/mysql /home/guandata/data;cat mysql.param > /etc/my.cnf" 2>&1 >/dev/null 
+ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh;/bin/bash changedatadir.sh;cat mysql.param > /etc/my.cnf" 2>&1 >/dev/null 
 ssh ${SlaveName} "echo -e \"server_id=2\nread_only=1\" >> /etc/my.cnf"
 
 echo "Configuring the Slave"
