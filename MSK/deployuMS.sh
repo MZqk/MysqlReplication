@@ -25,9 +25,8 @@ fi
 echo "Staring install Mysql5.7 soft"
 echo "============================================"
 bash ./installmysql.sh 2>&1 >/dev/null
-
-echo -e "log-bin\nserver_id=1\ncharacter-set-server=utf8mb4" >> /etc/my.cnf
-#cat mysql.param >> /etc/my.cnf
+cat mysql.param >> /etc/my.cnf
+echo -e "server_id=1" >> /etc/my.cnf
 
 echo "Configuring the Master"
 echo "============================================"
@@ -53,8 +52,8 @@ echo "============================================"
 ssh ${SlaveName} "cd /root;mkdir mysqlslave" 2>&1 >/dev/null 
 rsync -u *rpm root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
 rsync -u *sh root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh" 2>&1 >/dev/null 
-ssh ${SlaveName} "echo -e \"server_id=2\nlog-bin\ncharacter-set-server=utf8mb4\" >> /etc/my.cnf"
+ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh;cat mysql.param > /etc/my.cnf" 2>&1 >/dev/null 
+ssh ${SlaveName} "echo -e \"server_id=2\nread_only=1\" >> /etc/my.cnf"
 
 echo "Configuring the Slave"
 echo "============================================"
