@@ -1,5 +1,14 @@
 #!/bin/bash
 
+/bin/rpm -e $(/bin/rpm -qa | grep mariadb|xargs) --nodeps
+
+rpm -ivh mysql-community-server-5.7.34-1.el7.x86_64.rpm mysql-community-common-5.7.34-1.el7.x86_64.rpm mysql-community-client-5.7.34-1.el7.x86_64.rpm mysql-community-libs-5.7.34-1.el7.x86_64.rpm mysql-community-libs-compat-5.7.34-1.el7.x86_64.rpm
+
+systemctl start mysqld
+systemctl stop mysqld
+[root@guandatabitutorial1 MSK]# cat deployuMS.sh 
+#!/bin/bash
+
 ipwithmask=`ip addr |grep -A2 BROADCAST,MULTICAST,UP,LOWER_UP|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|sed -n 1p`
 MACHINEIP=${ipwithmask%/*}
 echo "Detected IP:"
@@ -25,8 +34,6 @@ fi
 echo "Staring install Mysql5.7 soft"
 echo "============================================"
 bash ./installmysql.sh 2>&1 >/dev/null
-systemctl start mysqld
-systemctl stop mysqld
 mv /var/lib/mysql /home/guandata/data
 cat mysql.param > /etc/my.cnf
 echo -e "server_id=1" >> /etc/my.cnf
@@ -54,8 +61,8 @@ echo "Staring install Mysql5.7 soft for Slave"
 echo "============================================"
 ssh ${SlaveName} "cd /root;mkdir mysqlslave" 2>&1 >/dev/null 
 rsync -u *rpm root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-rsync -u *sh root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
-ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh;systemctl start mysqld&&systemctl stop mysqld&&mv /var/lib/mysql /home/guandata/data&&cat mysql.param > /etc/my.cnf" 2>&1 >/dev/null 
+rsync -u * root@${SlaveName}:/root/mysqlslave 2>&1 >/dev/null
+ssh ${SlaveName} "cd /root/mysqlslave;/bin/bash installmysql.sh;mv /var/lib/mysql /home/guandata/data;cat mysql.param > /etc/my.cnf" 2>&1 >/dev/null 
 ssh ${SlaveName} "echo -e \"server_id=2\nread_only=1\" >> /etc/my.cnf"
 
 echo "Configuring the Slave"
