@@ -1,14 +1,5 @@
 #!/bin/bash
 
-/bin/rpm -e $(/bin/rpm -qa | grep mariadb|xargs) --nodeps
-
-rpm -ivh mysql-community-server-5.7.34-1.el7.x86_64.rpm mysql-community-common-5.7.34-1.el7.x86_64.rpm mysql-community-client-5.7.34-1.el7.x86_64.rpm mysql-community-libs-5.7.34-1.el7.x86_64.rpm mysql-community-libs-compat-5.7.34-1.el7.x86_64.rpm
-
-systemctl start mysqld
-systemctl stop mysqld
-[root@guandatabitutorial1 MSK]# cat deployuMS.sh 
-#!/bin/bash
-
 ipwithmask=`ip addr |grep -A2 BROADCAST,MULTICAST,UP,LOWER_UP|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|sed -n 1p`
 MACHINEIP=${ipwithmask%/*}
 echo "Detected IP:"
