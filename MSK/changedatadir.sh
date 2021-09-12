@@ -7,3 +7,4 @@ else
   mkdir -p $datadir
   echo "create mysql data directory "
 fi
+mv /var/lib/mysql $datadir
