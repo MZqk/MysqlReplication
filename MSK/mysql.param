@@ -1,0 +1,10 @@
+[mysqld]
+datadir=/home/guandata/data/mysql
+socket=/var/lib/mysql/mysql.sock
+log-error=/home/guandata/data/mysql/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+expire_logs_days = 30
+binlog-ignore-db=mysql,sys,information_schema,performance_schema
+log-bin
