@@ -6,10 +6,10 @@ socket  = /home/guandata/data/mysql/mysql.sock
 user    = mysql
 port    = 3306
 server_id = 3306
-basedir = /usr/local/mysql
+#basedir = /usr/local/mysql
 datadir = /home/guandata/data/mysql
 socket  = /home/guandata/data/mysql/mysql.sock
-pid_file = mysqldb.pid
+#pid_file = mysqldb.pid
 character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 #若你的MySQL数据库主要运行在境外，请务必根据实际情况调整本参数
