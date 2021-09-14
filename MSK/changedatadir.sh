@@ -4,7 +4,7 @@ if [ -e $datadir ]
 then
   echo "mysql data directory exists"
 else
-  mkdir -p $datadir
+  mkdir -p ${datadir%/*} 
   echo "create mysql data directory "
 fi
-mv /var/lib/mysql $datadir
+mv /var/lib/mysql ${datadir%/*}
