@@ -1,7 +1,7 @@
 #!/bin/bash
 source ~/.bash_profile #加载用户环境变量
-set -o nounset    #引用未初始化变量时退出
-set -o errexit   #执行shell命令遇到错误时退出
+#set -o nounset    #引用未初始化变量时退出
+#set -o errexit   #执行shell命令遇到错误时退出
 
 #备份用户---需要在mysql中提前创建并授权
 #GRANT SELECT,RELOAD,LOCK TABLES,REPLICATION CLIENT,SHOW VIEW,TRIGGER,EVENT ON *.* TO 'backup'@'%' IDENTIFIED BY 'baifendian';
@@ -9,7 +9,7 @@ user="root"
 #备份用户密码
 password="mysql1qaz@WSX"
 port="3306"
-mysql_path="/usr/local/mysql"
+mysql_path="/usr/bin/mysql"
 date=$(date +%Y-%m-%d_%H-%M-%S)
 del_date=$(date +%Y-%m-%d)
 #备份路径---需要修改
